@@ -1,59 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Node structure
 struct Node {
     int data;
     struct Node* next;
 };
 
-struct Node *front = NULL, *rear = NULL;
+// Queue structure
+struct Queue {
+    struct Node *front, *rear;
+};
 
-void enqueue(int x) {
+// Create Queue
+struct Queue* createQueue() {
+    struct Queue* q = (struct Queue*)malloc(sizeof(struct Queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+// Enqueue operation
+void enqueue(struct Queue* q, int x) {
     struct Node* temp = (struct Node*)malloc(sizeof(struct Node));
     temp->data = x;
     temp->next = NULL;
 
-    if (rear == NULL) {
-        front = rear = temp;
+    if (q->rear == NULL) {
+        q->front = q->rear = temp;
         return;
     }
 
-    rear->next = temp;
-    rear = temp;
+    q->rear->next = temp;
+    q->rear = temp;
 }
 
-void dequeue() {
-    if (front == NULL) {
-        printf("-1\n");
-        return;
+// Dequeue operation
+int dequeue(struct Queue* q) {
+    if (q->front == NULL) {
+        return -1;
     }
 
-    struct Node* temp = front;
-    printf("%d\n", front->data);
+    struct Node* temp = q->front;
+    int value = temp->data;
 
-    front = front->next;
+    q->front = q->front->next;
 
-    if (front == NULL)
-        rear = NULL;
+    if (q->front == NULL) {
+        q->rear = NULL;
+    }
 
     free(temp);
+    return value;
 }
 
+// Main function
 int main() {
-    int N;
-    scanf("%d", &N);
+    int n;
+    scanf("%d", &n);
 
-    char op[10];
-    int x;
+    struct Queue* q = createQueue();
 
-    for (int i = 0; i < N; i++) {
+    while (n--) {
+        char op[10];
         scanf("%s", op);
 
-        if (op[0] == 'e') {   // enqueue
+        if (op[0] == 'e') { // enqueue
+            int x;
             scanf("%d", &x);
-            enqueue(x);
-        } else if (op[0] == 'd') {   // dequeue
-            dequeue();
+            enqueue(q, x);
+        } else if (op[0] == 'd') { // dequeue
+            printf("%d\n", dequeue(q));
         }
     }
 
